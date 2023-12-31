@@ -1,22 +1,38 @@
 #include <math.h>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cstdlib>
 using namespace sf;
 const double pi =3.1415926535;
-double sinfunc(double x)
+double sinfunc(double x, double n)
 {
-    return 100*sin(x*pi/180);
+    return 200*sin(x*pi/180);
 }
-double cosfunc(double x)
+double cosfunc(double x, double n)
 {
-    return 100*cos(x*pi/180);
+    return 200*cos(x*pi/180);
 }
-sf::Color getRandomColor() {
-    int r = rand() % 256+55;
-    int g = rand() % 256+55;
-    int b = rand() % 256+55;
+double tanfunc(double x, double n)
+{
+    return 200*tan(x*pi/180);
+}
+double multiplierfunc(double x, double n=1)
+{
+    return x*n;
+}
+double powx(double x,double n =1)
+{
+    //dont use powers higher than 3
+    return pow(x,n);
+}
+namespace sf {
+    Color getRandomColor() {
+        int r = rand() % 256 + 55;
+        int g = rand() % 256 + 55;
+        int b = rand() % 256 + 55;
 
-    return sf::Color(r, g, b);
+        return sf::Color(r, g, b);
+    }
 }
 
 
@@ -30,7 +46,7 @@ class Buttons
     double titleX, titleY;
     Color color;
     void checkCollision(const sf::Vector2i& mousePos, sf::Clock& clock) {
-        if (clock.getElapsedTime().asMilliseconds() > 200) {
+
             if (mousePos.x >= shape.getPosition().x &&
                 mousePos.x <= shape.getPosition().x + shape.getSize().x &&
                 mousePos.y >= shape.getPosition().y &&
@@ -40,7 +56,7 @@ class Buttons
                 isPressed = !isPressed;
                 clock.restart();
             }
-        }
+
     }
     int draw_button(RenderWindow& window)
     {
@@ -60,22 +76,27 @@ class Buttons
     isPressed = false;
     color=getRandomColor();
     }
-    int draw_line(RenderWindow &window,double (*func)(double))
+    int draw_line(RenderWindow &window,double (*func)(double, double), double n=1)
     {
         if(isPressed == true)
         {
            line.setSize(Vector2f(1,1));
-        int j;
+        double j;
         line.setFillColor(color);
-        for(double i = -700; i<=700; i+=0.01)
+        for(double i = -400; i<=400; i+=0.1)
         {
-            j=func(i);
-            line.setPosition(Vector2f(window.getSize().y/2+i,window.getSize().y/2+j));
+            j=func(i, n);
+            if(n==0)
+            {
+                break;
+            }
+            //std::cout<<j;
+            line.setPosition(Vector2f(window.getSize().y/2+i,window.getSize().y/2-j));
             window.draw(line);
         }
         }
 
     }
 };
-Buttons sinbutton, cosbutton;
+Buttons sinbutton, cosbutton, tanbutton,multiplierbutton;
 
